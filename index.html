@@ -1,758 +1,338 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>WhatsApp Direct Chat — Without Saving Number</title>
-  <meta name="description" content="Open WhatsApp chat without saving number. Select country code, enter number, add message, and start chat." />
-  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-
-  <!-- Choices.js (for beautiful searchable select) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
-
-  <style>
-    :root{
-      --bg: #0e1116;
-      --card: #12161f;
-      --muted: #9aa4b2;
-      --text: #e6edf3;
-      --primary: #00a884; /* WhatsApp green */
-      --primary-2: #25d366;
-      --ring: rgba(0,168,132,.35);
-      --border: #1f2836;
-      --error: #ff4d4f;
-      --success: #21c07a;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --theme-name: 'dark';
-    }
-
-    :root[data-theme="light"] {
-      --bg: #f0f2f5;
-      --card: #ffffff;
-      --muted: #667781;
-      --text: #3b4a54;
-      --primary: #00a884;
-      --primary-2: #25d366;
-      --ring: rgba(0,168,132,.25);
-      --border: #e6e6e6;
-      --error: #ff4d4f;
-      --success: #21c07a;
-      --shadow: 0 10px 30px rgba(0,0,0,.1);
-      --theme-name: 'light';
-    }
-
-    :root[data-theme="blue"] {
-      --bg: #0f1a2e;
-      --card: #1a2536;
-      --muted: #8b9cb1;
-      --text: #e3eaf2;
-      --primary: #0084ff;
-      --primary-2: #4a9eff;
-      --ring: rgba(0,132,255,.35);
-      --border: #243147;
-      --error: #ff4d4f;
-      --success: #21c07a;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --theme-name: 'blue';
-    }
-
-    *{ box-sizing: border-box }
-    html,body{ height:100% }
-    body{
-      margin:0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      color: var(--text);
-      background:
-        radial-gradient(1200px 600px at 90% -10%, rgba(0,168,132,.15), transparent 50%),
-        radial-gradient(900px 500px at -10% 110%, rgba(37,211,102,.12), transparent 50%),
-        linear-gradient(180deg, #0a0c10, #0d1016 30%, #0e1116);
-      transition: background-color 0.3s ease;
-    }
-
-    body[data-theme="light"] {
-      background:
-        radial-gradient(1200px 600px at 90% -10%, rgba(0,168,132,.08), transparent 50%),
-        radial-gradient(900px 500px at -10% 110%, rgba(37,211,102,.06), transparent 50%),
-        linear-gradient(180deg, #e0e6ed, #f0f2f5 30%, #f0f2f5);
-    }
-
-    body[data-theme="blue"] {
-      background:
-        radial-gradient(1200px 600px at 90% -10%, rgba(0,132,255,.15), transparent 50%),
-        radial-gradient(900px 500px at -10% 110%, rgba(74,158,255,.12), transparent 50%),
-        linear-gradient(180deg, #0c1525, #0f1a2e 30%, #0f1a2e);
-    }
-
-    .wrap{
-      min-height:100%;
-      display:grid;
-      place-items:center;
-      padding: 40px 16px;
-    }
-    .card{
-      width:100%;
-      max-width: 760px;
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)) , var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      transition: all 0.3s ease;
-    }
-    .header{
-      padding: 22px 22px 10px;
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(0,168,132,.12), transparent 60%);
-      position: relative;
-    }
-
-    body[data-theme="blue"] .header {
-      background: linear-gradient(180deg, rgba(0,132,255,.12), transparent 60%);
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .logo{
-      width:38px; height:38px; display:grid; place-items:center;
-      border-radius: 10px;
-      background: radial-gradient(70% 70% at 50% 30%, rgba(0,168,132,.35), rgba(0,168,132,.15));
-      border: 1px solid rgba(0,168,132,.25);
-      color:#eafff7;
-      font-weight: 800;
-      letter-spacing: -1px;
-    }
-
-    body[data-theme="blue"] .logo {
-      background: radial-gradient(70% 70% at 50% 30%, rgba(0,132,255,.35), rgba(0,132,255,.15));
-      border: 1px solid rgba(0,132,255,.25);
-    }
-
-    .title{ font-size: 1.15rem; font-weight: 700 }
-    .subtitle{ color: var(--muted); font-size: .93rem }
-
-    .theme-switcher {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .theme-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 2px solid var(--border);
-      cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s;
-    }
-
-    .theme-btn:hover {
-      transform: scale(1.1);
-    }
-
-    .theme-btn.active {
-      border-color: var(--primary);
-      transform: scale(1.1);
-    }
-
-    .theme-dark {
-      background: linear-gradient(135deg, #0e1116 50%, #1a2536 50%);
-    }
-
-    .theme-light {
-      background: linear-gradient(135deg, #f0f2f5 50%, #ffffff 50%);
-    }
-
-    .theme-blue {
-      background: linear-gradient(135deg, #0f1a2e 50%, #0084ff 50%);
-    }
-
-    .body{ padding: 22px; display:grid; gap:18px }
-    .row{ display:grid; gap:12px }
-    .grid-2{
-      display:grid;
-      grid-template-columns: 230px 1fr;
-      gap: 12px;
-    }
-    @media (max-width: 640px){ 
-      .grid-2{ grid-template-columns: 1fr } 
-      .header { flex-direction: column; align-items: flex-start; gap: 12px; }
-      .theme-switcher { align-self: flex-end; }
-    }
-
-    label{
-      font-size: .9rem;
-      color: var(--muted);
-      display:flex; align-items:center; gap:8px;
-    }
-    .field{
-      position:relative;
-      display:flex; align-items:center;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.02);
-      border-radius: 12px;
-      padding: 6px 10px;
-      transition: all 0.2s ease;
-    }
-
-    body[data-theme="light"] .field {
-      background: rgba(0,0,0,.02);
-    }
-
-    .field:focus-within{
-      border-color: var(--ring);
-      box-shadow: 0 0 0 6px rgba(0,168,132,.08);
-      background: rgba(0,168,132,.04);
-    }
-
-    body[data-theme="blue"] .field:focus-within {
-      box-shadow: 0 0 0 6px rgba(0,132,255,.08);
-      background: rgba(0,132,255,.04);
-    }
-
-    select, input, textarea{
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text);
-      width:100%;
-      font-size: 1rem;
-      padding: 10px 8px;
-    }
-    textarea{ resize: vertical; min-height: 90px; }
-
-    .hint{ font-size:.85rem; color: var(--muted) }
-
-    .btns{ display:flex; gap:10px; flex-wrap: wrap; margin-top: 6px }
-    .btn{
-      appearance: none;
-      border:1px solid transparent;
-      background: var(--primary);
-      color:#062e27;
-      font-weight: 700;
-      padding: 12px 16px;
-      border-radius: 12px;
-      cursor:pointer;
-      transition:.2s ease;
-      flex: 1;
-      min-width: 120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    body[data-theme="light"] .btn {
-      color: white;
-    }
-
-    body[data-theme="blue"] .btn {
-      color: white;
-    }
-
-    .btn:hover{ filter: brightness(1.07) }
-    .btn:active{ transform: translateY(1px) }
-    .btn.secondary{
-      background: transparent;
-      color: var(--text);
-      border-color: var(--border);
-    }
-    .btn.ghost{
-      background: rgba(255,255,255,.03);
-      color: var(--muted);
-      border-color: var(--border);
-    }
-
-    body[data-theme="light"] .btn.ghost {
-      background: rgba(0,0,0,.03);
-    }
-
-    .preview{
-      margin-top: 8px;
-      padding: 12px;
-      border:1px dashed var(--border);
-      border-radius: 12px;
-      color: var(--muted);
-      overflow:auto;
-      white-space: nowrap;
-      background: rgba(255,255,255,.02);
-    }
-
-    body[data-theme="light"] .preview {
-      background: rgba(0,0,0,.02);
-    }
-
-    .preview a{ color: var(--primary-2); text-decoration: none; word-break: break-all }
-
-    .footer{
-      padding: 12px 18px 18px;
-      color: var(--muted);
-      font-size: .85rem;
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px; flex-wrap:wrap;
-      border-top:1px solid var(--border);
-    }
-
-    /* Choices.js overrides (nice select) */
-    .choices__inner{
-      background: transparent !important;
-      border: none !important;
-      padding: 0 !important;
-      min-height: auto !important;
-      color: var(--text);
-    }
-    .choices__list--single .choices__item{ padding: 10px 8px; }
-    .choices{ width:100% }
-    .choices__list--dropdown,
-    .choices__list[aria-expanded]{
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
-    .choices__list--dropdown .choices__item--selectable.is-highlighted{
-      background: rgba(0,168,132,.18);
-    }
-
-    body[data-theme="blue"] .choices__list--dropdown .choices__item--selectable.is-highlighted {
-      background: rgba(0,132,255,.18);
-    }
-
-    .choices__input{ background: transparent; color: var(--text) }
-
-    /* Toast */
-    .toast{
-      position: fixed;
-      right: 16px;
-      top: 16px;
-      background: #0b1512;
-      border: 1px solid rgba(0,168,132,.25);
-      color: #ccfff0;
-      padding: 12px 14px;
-      border-radius: 10px;
-      box-shadow: var(--shadow);
-      transform: translateY(-16px);
-      opacity: 0;
-      animation: slideIn .23s ease forwards;
-      z-index: 9999;
-      max-width: 80vw;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    body[data-theme="blue"] .toast {
-      background: #0b1a2e;
-      border: 1px solid rgba(0,132,255,.25);
-    }
-
-    .toast.error{ background:#1a1212; border-color: rgba(255,77,79,.35); color: #ffe9e9 }
-    @keyframes slideIn{
-      to{ transform: translateY(0); opacity:1 }
-    }
-
-    /* Mobile optimizations */
-    @media (max-width: 480px) {
-      .btns {
-        flex-direction: column;
-      }
-      
-      .btn {
-        width: 100%;
-      }
-      
-      .footer {
-        flex-direction: column;
-        text-align: center;
-      }
-      
-      .body {
-        padding: 16px;
-      }
-      
-      .header {
-        padding: 16px 16px 10px;
-      }
-    }
-
-    /* Loading animation */
-    .loading {
-      display: inline-block;
-      width: 20px;
-      height: 20px;
-      border: 3px solid rgba(255,255,255,.3);
-      border-radius: 50%;
-      border-top-color: var(--primary);
-      animation: spin 1s ease-in-out infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  </style>
-</head>
-<body data-theme="dark">
-  <div class="wrap">
-    <div class="card">
-      <div class="header">
-        <div class="header-left">
-          <div class="logo">WA</div>
-          <div>
-            <div class="title">WhatsApp Direct Chat (No Save)</div>
-            <div class="subtitle">Start chatting without saving numbers</div>
-          </div>
-        </div>
-        <div class="theme-switcher">
-          <div class="theme-btn theme-dark active" data-theme="dark" title="Dark Theme"></div>
-          <div class="theme-btn theme-light" data-theme="light" title="Light Theme"></div>
-          <div class="theme-btn theme-blue" data-theme="blue" title="Blue Theme"></div>
-        </div>
-      </div>
-
-      <div class="body">
-        <div class="row grid-2">
-          <div>
-            <label for="countryCode">
-              <i class="fas fa-globe"></i>
-              Country Code
-            </label>
-            <div class="field">
-              <select id="countryCode" aria-label="Country code">
-                <option value="" disabled selected>Loading country codes...</option>
-              </select>
-            </div>
-            <div class="hint">Search by country name or code</div>
-          </div>
-
-          <div>
-            <label for="phoneNumber">
-              <i class="fas fa-mobile-alt"></i>
-              Phone Number
-            </label>
-            <div class="field">
-              <input id="phoneNumber" type="tel" inputmode="numeric" placeholder="Number without 0, spaces, or dashes" />
-            </div>
-            <div class="hint">Example: 98XXXXXXXX (without leading 0)</div>
-          </div>
-        </div>
-
-        <div class="row">
-          <label for="message">
-            <i class="fas fa-comment"></i>
-            Message (optional)
-          </label>
-          <div class="field">
-            <textarea id="message" placeholder="Your message goes here..."></textarea>
-          </div>
-        </div>
-
-        <div class="btns">
-          <button id="startBtn" class="btn">
-            <i class="fab fa-whatsapp"></i>
-            Start Chat
-          </button>
-          <button id="copyBtn" class="btn secondary">
-            <i class="fas fa-copy"></i>
-            Copy Link
-          </button>
-          <button id="resetBtn" class="btn ghost">
-            <i class="fas fa-redo"></i>
-            Reset
-          </button>
-        </div>
-
-        <div class="preview">
-          <i class="fas fa-link"></i>
-          Link preview: <a id="previewLink" href="#" target="_blank" rel="noopener">—</a>
-        </div>
-      </div>
-
-      <div class="footer">
-        <div>Made with ❤️ for fast WhatsApp chats</div>
-        <div>Tip: wa.me uses only digits (no +, spaces, 00)</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Font Awesome for icons -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-  
-  <!-- Choices.js -->
-  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
-
-  <script>
-    // Utility: Toast
-    function toast(msg, type="ok"){
-      const t = document.createElement('div');
-      t.className = 'toast' + (type === 'error' ? ' error' : '');
-      
-      const icon = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
-      t.innerHTML = `<i class="${icon}"></i> ${msg}`;
-      
-      document.body.appendChild(t);
-      setTimeout(() => {
-        t.style.transition = 'opacity .3s, transform .3s';
-        t.style.opacity = '0';
-        t.style.transform = 'translateY(-10px)';
-        setTimeout(() => t.remove(), 350);
-      }, 2200);
-    }
-
-    // Elements
-    const countrySelect = document.getElementById('countryCode');
-    const phoneInput    = document.getElementById('phoneNumber');
-    const messageArea   = document.getElementById('message');
-    const previewLink   = document.getElementById('previewLink');
-    const startBtn      = document.getElementById('startBtn');
-    const copyBtn       = document.getElementById('copyBtn');
-    const resetBtn      = document.getElementById('resetBtn');
-    const themeBtns     = document.querySelectorAll('.theme-btn');
-    const body          = document.body;
-
-    let choices; // Choices.js instance
-
-    // Theme switching
-    themeBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const theme = btn.getAttribute('data-theme');
-        
-        // Update active button
-        themeBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        
-        // Update theme
-        body.setAttribute('data-theme', theme);
-        document.documentElement.setAttribute('data-theme', theme);
-        
-        // Update choices dropdown if it exists
-        if (choices) {
-          setTimeout(() => {
-            choices.destroy();
-            initChoices();
-          }, 100);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            padding: 32px 24px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .body {
+            padding: 32px 24px;
+        }
+
+        .input-container {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .country-code {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #25D366;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .number-input {
+            width: 100%;
+            padding: 20px 24px 20px 80px;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: 500;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: #25D366;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.1);
+        }
+
+        .input-hint {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 20px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: #f0f2f5;
+            color: #128C7E;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:active {
+            background: #e4e6e9;
+            transform: scale(0.98);
+        }
+
+        .preview {
+            background: #f8f9fa;
+            border: 2px dashed #ddd;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .preview-link {
+            color: #128C7E;
+            text-decoration: none;
+            word-break: break-all;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #25D366;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 90%;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 20px;
+            }
+            
+            .header {
+                padding: 24px 20px;
+            }
+            
+            .body {
+                padding: 24px 20px;
+            }
+            
+            .number-input {
+                padding: 18px 20px 18px 70px;
+                font-size: 16px;
+            }
+            
+            .btn {
+                padding: 18px;
+            }
+        }
+
+        .btn, .number-input {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">💬</div>
+            <div class="title">WhatsApp Chat</div>
+        </div>
+
+        <div class="body">
+            <div class="input-container">
+                <div class="country-code">+91</div>
+                <input 
+                    type="tel" 
+                    class="number-input" 
+                    id="phoneNumber" 
+                    placeholder="Enter 10 digit number"
+                    autofocus
+                    inputmode="numeric"
+                    maxlength="10"
+                />
+            </div>
+
+            <div class="buttons">
+                <button class="btn btn-primary" id="startBtn">
+                    <span>💚</span>
+                    Start Chat
+                </button>
+                <button class="btn btn-secondary" id="copyBtn">
+                    <span>📋</span>
+                    Copy
+                </button>
+            </div>
+
+            <div class="preview">
+                <a href="#" class="preview-link" id="previewLink" target="_blank">Enter number to generate link</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <span>✅</span>
+        <span id="toastMessage">Success!</span>
+    </div>
+
+    <script>
+        const phoneInput = document.getElementById('phoneNumber');
+        const previewLink = document.getElementById('previewLink');
+        const startBtn = document.getElementById('startBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        function buildLink() {
+            const number = phoneInput.value.trim().replace(/[^\d]/g, '');
+            
+            if (!number || number.length !== 10) {
+                return '#';
+            }
+            
+            return `https://wa.me/91${number}`;
+        }
+
+        function updatePreview() {
+            const link = buildLink();
+            previewLink.href = link === '#' ? 'javascript:void(0)' : link;
+            previewLink.textContent = link === '#' ? 'Enter number to generate link' : link;
+        }
+
+        function showToast(message) {
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        function isValidNumber() {
+            const number = phoneInput.value.trim().replace(/[^\d]/g, '');
+            
+            if (!number) {
+                showToast('Enter phone number');
+                return false;
+            }
+            
+            if (number.length !== 10) {
+                showToast('Enter 10 digit number');
+                return false;
+            }
+            
+            return true;
+        }
+
+        phoneInput.addEventListener('input', updatePreview);
         
-        // Save theme preference
-        localStorage.setItem('wa-theme', theme);
-      });
-    });
-
-    // Load saved theme
-    const savedTheme = localStorage.getItem('wa-theme') || 'dark';
-    body.setAttribute('data-theme', savedTheme);
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    
-    // Update active theme button
-    document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`).classList.add('active');
-
-    // Normalize number (digits only)
-    const digitsOnly = v => (v || '').replace(/[^\d]/g, '');
-
-    // Build WA link
-    function buildLink(){
-      const code = countrySelect.value || '';
-      const num  = digitsOnly(phoneInput.value);
-      const msg  = (messageArea.value || '').trim();
-
-      if(!code || !num) return '#';
-      const full = code.replace(/\+/,'') + num;
-      const url  = 'https://wa.me/' + full + (msg ? ('?text=' + encodeURIComponent(msg)) : '');
-      return url;
-    }
-
-    // Update preview
-    function syncPreview(){
-      const url = buildLink();
-      previewLink.href = url === '#' ? 'javascript:void(0)' : url;
-      previewLink.textContent = url === '#' ? '—' : url;
-    }
-
-    // Validate basic
-    function isValid(){
-      const code = countrySelect.value;
-      const num  = digitsOnly(phoneInput.value);
-      if(!code){ toast('Please select a country code', 'error'); return false; }
-      if(!num){ toast('Please enter a phone number', 'error'); return false; }
-      if(num.length < 5 || num.length > 15){
-        toast('Number length seems invalid (5–15 digits)', 'error');
-        return false;
-      }
-      return true;
-    }
-
-    // Initialize Choices.js
-    function initChoices() {
-      choices = new Choices(countrySelect, {
-        searchEnabled: true,
-        searchChoices: true,
-        itemSelectText: '',
-        shouldSort: false,
-        fuseOptions: { threshold: 0.35 },
-        placeholder: true,
-        placeholderValue: 'Select country code'
-      });
-    }
-
-    // Fetch country codes from RestCountries
-    async function loadCountries(){
-      try{
-        // Show loading state
-        startBtn.innerHTML = '<div class="loading"></div> Loading...';
-        startBtn.disabled = true;
+        startBtn.addEventListener('click', () => {
+            if (isValidNumber()) {
+                const link = buildLink();
+                window.open(link, '_blank', 'noopener');
+            }
+        });
         
-        const res = await fetch('https://restcountries.com/v3.1/all?fields=name,idd,cca2');
-        const data = await res.json();
-
-        const options = [];
-        data.forEach(c => {
-          if(!c.idd || !c.idd.root) return;
-          const root = c.idd.root; // e.g. "+1"
-          const suffixes = Array.isArray(c.idd.suffixes) && c.idd.suffixes.length ? c.idd.suffixes : [''];
-          suffixes.forEach(suf => {
-            const dial = (root || '') + (suf || '');
-            const name = c.name?.common || 'Unknown';
-            const code = c.cca2 || '';
-            // Skip anomalies
-            if(!/^\+\d+$/.test(dial)) return;
-            options.push({
-              label: `${name} (${dial})`,
-              value: dial,
-              sortKey: name.toLowerCase() + dial
-            });
-          });
+        copyBtn.addEventListener('click', async () => {
+            if (!isValidNumber()) return;
+            
+            const link = buildLink();
+            
+            try {
+                await navigator.clipboard.writeText(link);
+                showToast('Link copied');
+            } catch (err) {
+                const textArea = document.createElement('textarea');
+                textArea.value = link;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('Link copied');
+            }
         });
 
-        // Sort nicely by country name
-        options.sort((a,b)=> a.sortKey.localeCompare(b.sortKey));
-
-        // Clear and fill
-        countrySelect.innerHTML = '';
-        options.forEach(opt=>{
-          const o = document.createElement('option');
-          o.value = opt.value;
-          o.textContent = opt.label;
-          countrySelect.appendChild(o);
+        phoneInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                startBtn.click();
+            }
         });
 
-        // Default to India (+91) if available, else first item
-        const defaultCode = [...countrySelect.options].find(o => o.value === '+91') ? '+91' : countrySelect.options[0]?.value;
-        if(defaultCode) countrySelect.value = defaultCode;
+        setTimeout(() => {
+            phoneInput.focus();
+        }, 500);
 
-        // Enhance with Choices.js (searchable)
-        initChoices();
-
-        // Restore button state
-        startBtn.innerHTML = '<i class="fab fa-whatsapp"></i> Start Chat';
-        startBtn.disabled = false;
-        
-        syncPreview();
-      }catch(e){
-        console.error('Failed to load countries:', e);
-        // Fallback minimal list if API fails
-        countrySelect.innerHTML = `
-          <option value="+91">India (+91)</option>
-          <option value="+1">United States/Canada (+1)</option>
-          <option value="+44">United Kingdom (+44)</option>
-          <option value="+971">United Arab Emirates (+971)</option>
-          <option value="+92">Pakistan (+92)</option>
-          <option value="+880">Bangladesh (+880)</option>
-          <option value="+977">Nepal (+977)</option>
-          <option value="+86">China (+86)</option>
-          <option value="+81">Japan (+81)</option>
-          <option value="+49">Germany (+49)</option>
-          <option value="+33">France (+33)</option>
-          <option value="+7">Russia (+7)</option>
-          <option value="+55">Brazil (+55)</option>
-        `;
-        initChoices();
-        toast('Using offline country list', 'error');
-        
-        // Restore button state
-        startBtn.innerHTML = '<i class="fab fa-whatsapp"></i> Start Chat';
-        startBtn.disabled = false;
-        
-        syncPreview();
-      }
-    }
-
-    // Events
-    [countrySelect, phoneInput, messageArea].forEach(el => {
-      el.addEventListener('input', syncPreview);
-      el.addEventListener('change', syncPreview);
-    });
-
-    startBtn.addEventListener('click', e=>{
-      e.preventDefault();
-      if(!isValid()) return;
-      const url = buildLink();
-      window.open(url, '_blank', 'noopener');
-    });
-
-    copyBtn.addEventListener('click', async e=>{
-      e.preventDefault();
-      if(!isValid()) return;
-      const url = buildLink();
-      try{
-        await navigator.clipboard.writeText(url);
-        toast('Link copied to clipboard ✅');
-      }catch{
-        // Fallback
-        const ta = document.createElement('textarea');
-        ta.value = url;
-        document.body.appendChild(ta);
-        ta.select();
-        try{ document.execCommand('copy'); toast('Link copied to clipboard ✅'); }
-        catch{ toast('Copy failed', 'error'); }
-        ta.remove();
-      }
-    });
-
-    resetBtn.addEventListener('click', e=>{
-      e.preventDefault();
-      phoneInput.value = '';
-      messageArea.value = '';
-      if(choices){ 
-        const defaultCode = [...countrySelect.options].find(o => o.value === '+91') ? '+91' : countrySelect.options[0]?.value;
-        choices.setChoiceByValue(defaultCode); 
-      }
-      syncPreview();
-      phoneInput.focus();
-    });
-
-    // Handle Enter key in phone input
-    phoneInput.addEventListener('keypress', e => {
-      if (e.key === 'Enter') {
-        startBtn.click();
-      }
-    });
-
-    // Auto-focus phone input after country selection
-    countrySelect.addEventListener('change', () => {
-      if (phoneInput.value === '') {
-        setTimeout(() => phoneInput.focus(), 100);
-      }
-    });
-
-    // Init
-    loadCountries();
-    syncPreview();
-    
-    // Focus phone input on page load
-    setTimeout(() => {
-      if (phoneInput.value === '') {
-        phoneInput.focus();
-      }
-    }, 500);
-  </script>
+        updatePreview();
+    </script>
 </body>
 </html>
