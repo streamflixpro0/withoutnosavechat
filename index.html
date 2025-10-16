@@ -1,52 +1,64 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>WhatsApp Direct Chat — No Save</title>
-  <meta name="description" content="Open WhatsApp chat without saving number. Select country code, enter number, validate, add message, and start chat." />
-  <meta name="theme-color" content="#0e1116" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>WhatsApp Direct Chat — Without Saving Number</title>
+  <meta name="description" content="Open WhatsApp chat without saving number. Select country code, enter number, add message, and start chat." />
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <!-- Choices.js (pinned version) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/styles/choices.min.css" />
+
+  <!-- Choices.js (for beautiful searchable select) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
   <style>
     :root{
-      --radius: 14px;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-
-      /* Accent (changeable) — default: Teal/WhatsApp */
-      --primary: #00a884;
+      --bg: #0e1116;
+      --card: #12161f;
+      --muted: #9aa4b2;
+      --text: #e6edf3;
+      --primary: #00a884; /* WhatsApp green */
       --primary-2: #25d366;
       --ring: rgba(0,168,132,.35);
-    }
-    /* Dark theme */
-    [data-theme="dark"]{
-      --bg: #0e1116;
-      --bg-2: #0b0f14;
-      --card: #12161f;
       --border: #1f2836;
-      --text: #e6edf3;
-      --muted: #a3afbd;
-      --muted-2: #8091a7;
-      --error: #ff5a5f;
-      --ok: #21c07a;
-      color-scheme: dark;
+      --error: #ff4d4f;
+      --success: #21c07a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --theme-name: 'dark';
     }
-    /* Light theme */
-    [data-theme="light"]{
-      --bg: #f6f8fb;
-      --bg-2: #ffffff;
+
+    :root[data-theme="light"] {
+      --bg: #f0f2f5;
       --card: #ffffff;
-      --border: #e6eaf0;
-      --text: #0e1623;
-      --muted: #5b6b7f;
-      --muted-2: #7687a0;
-      --error: #e11d48;
-      --ok: #059669;
-      color-scheme: light;
+      --muted: #667781;
+      --text: #3b4a54;
+      --primary: #00a884;
+      --primary-2: #25d366;
+      --ring: rgba(0,168,132,.25);
+      --border: #e6e6e6;
+      --error: #ff4d4f;
+      --success: #21c07a;
+      --shadow: 0 10px 30px rgba(0,0,0,.1);
+      --theme-name: 'light';
+    }
+
+    :root[data-theme="blue"] {
+      --bg: #0f1a2e;
+      --card: #1a2536;
+      --muted: #8b9cb1;
+      --text: #e3eaf2;
+      --primary: #0084ff;
+      --primary-2: #4a9eff;
+      --ring: rgba(0,132,255,.35);
+      --border: #243147;
+      --error: #ff4d4f;
+      --success: #21c07a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --theme-name: 'blue';
     }
 
     *{ box-sizing: border-box }
@@ -56,35 +68,62 @@
       font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       color: var(--text);
       background:
-        radial-gradient(1200px 600px at 90% -10%, rgba(0,168,132,.12), transparent 50%),
-        radial-gradient(900px 500px at -10% 110%, rgba(37,211,102,.10), transparent 50%),
-        linear-gradient(180deg, var(--bg-2), var(--bg));
-      padding-bottom: env(safe-area-inset-bottom);
+        radial-gradient(1200px 600px at 90% -10%, rgba(0,168,132,.15), transparent 50%),
+        radial-gradient(900px 500px at -10% 110%, rgba(37,211,102,.12), transparent 50%),
+        linear-gradient(180deg, #0a0c10, #0d1016 30%, #0e1116);
+      transition: background-color 0.3s ease;
+    }
+
+    body[data-theme="light"] {
+      background:
+        radial-gradient(1200px 600px at 90% -10%, rgba(0,168,132,.08), transparent 50%),
+        radial-gradient(900px 500px at -10% 110%, rgba(37,211,102,.06), transparent 50%),
+        linear-gradient(180deg, #e0e6ed, #f0f2f5 30%, #f0f2f5);
+    }
+
+    body[data-theme="blue"] {
+      background:
+        radial-gradient(1200px 600px at 90% -10%, rgba(0,132,255,.15), transparent 50%),
+        radial-gradient(900px 500px at -10% 110%, rgba(74,158,255,.12), transparent 50%),
+        linear-gradient(180deg, #0c1525, #0f1a2e 30%, #0f1a2e);
     }
 
     .wrap{
       min-height:100%;
       display:grid;
       place-items:center;
-      padding: clamp(16px, 3vw, 32px);
+      padding: 40px 16px;
     }
     .card{
       width:100%;
-      max-width: 820px;
+      max-width: 760px;
       background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02)) , var(--card);
       border: 1px solid var(--border);
       border-radius: 18px;
       box-shadow: var(--shadow);
       overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .header{
+      padding: 22px 22px 10px;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(0,168,132,.12), transparent 60%);
+      position: relative;
     }
 
-    .header{
-      padding: 14px 16px;
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-      border-bottom: 1px solid var(--border);
-      background: linear-gradient(180deg, rgba(0,168,132,.10), transparent 60%);
+    body[data-theme="blue"] .header {
+      background: linear-gradient(180deg, rgba(0,132,255,.12), transparent 60%);
     }
-    .head-left{ display:flex; align-items:center; gap:12px }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
     .logo{
       width:38px; height:38px; display:grid; place-items:center;
       border-radius: 10px;
@@ -93,92 +132,135 @@
       color:#eafff7;
       font-weight: 800;
       letter-spacing: -1px;
-      user-select:none;
-    }
-    .title{ font-size: 1.05rem; font-weight: 800; letter-spacing: -.2px }
-    .subtitle{ color: var(--muted); font-size: .9rem }
-    .head-right{ display:flex; align-items:center; gap:10px; flex-wrap: wrap }
-
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.03);
-      padding: 8px 10px;
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: .9rem;
-      cursor:pointer;
-      user-select: none;
-    }
-    .pill b{ color: var(--text) }
-    .chip{
-      width: 22px; height: 22px; border-radius: 999px; border:1px solid var(--border);
-      display:inline-block; cursor:pointer;
     }
 
-    .body{ padding: 18px; display:grid; gap:16px }
+    body[data-theme="blue"] .logo {
+      background: radial-gradient(70% 70% at 50% 30%, rgba(0,132,255,.35), rgba(0,132,255,.15));
+      border: 1px solid rgba(0,132,255,.25);
+    }
+
+    .title{ font-size: 1.15rem; font-weight: 700 }
+    .subtitle{ color: var(--muted); font-size: .93rem }
+
+    .theme-switcher {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .theme-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .theme-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .theme-btn.active {
+      border-color: var(--primary);
+      transform: scale(1.1);
+    }
+
+    .theme-dark {
+      background: linear-gradient(135deg, #0e1116 50%, #1a2536 50%);
+    }
+
+    .theme-light {
+      background: linear-gradient(135deg, #f0f2f5 50%, #ffffff 50%);
+    }
+
+    .theme-blue {
+      background: linear-gradient(135deg, #0f1a2e 50%, #0084ff 50%);
+    }
+
+    .body{ padding: 22px; display:grid; gap:18px }
+    .row{ display:grid; gap:12px }
     .grid-2{
       display:grid;
-      grid-template-columns: 260px 1fr;
+      grid-template-columns: 230px 1fr;
       gap: 12px;
     }
-    @media (max-width: 700px){ .grid-2{ grid-template-columns: 1fr } }
+    @media (max-width: 640px){ 
+      .grid-2{ grid-template-columns: 1fr } 
+      .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .theme-switcher { align-self: flex-end; }
+    }
 
     label{
-      font-size: .92rem;
+      font-size: .9rem;
       color: var(--muted);
       display:flex; align-items:center; gap:8px;
     }
-
     .field{
       position:relative;
       display:flex; align-items:center;
       border:1px solid var(--border);
       background: rgba(255,255,255,.02);
-      border-radius: var(--radius);
-      padding: 4px 8px;
-      transition: .2s ease;
+      border-radius: 12px;
+      padding: 6px 10px;
+      transition: all 0.2s ease;
     }
+
+    body[data-theme="light"] .field {
+      background: rgba(0,0,0,.02);
+    }
+
     .field:focus-within{
       border-color: var(--ring);
-      box-shadow: 0 0 0 6px rgba(0,168,132,.10);
-      background: rgba(0,168,132,.05);
+      box-shadow: 0 0 0 6px rgba(0,168,132,.08);
+      background: rgba(0,168,132,.04);
     }
+
+    body[data-theme="blue"] .field:focus-within {
+      box-shadow: 0 0 0 6px rgba(0,132,255,.08);
+      background: rgba(0,132,255,.04);
+    }
+
     select, input, textarea{
       background: transparent;
       border: none;
       outline: none;
       color: var(--text);
       width:100%;
-      font-size: 1.05rem;
-      padding: 12px 10px;
+      font-size: 1rem;
+      padding: 10px 8px;
     }
-    input::placeholder, textarea::placeholder{ color: var(--muted-2) }
     textarea{ resize: vertical; min-height: 90px; }
 
-    .hint{ font-size:.86rem; color: var(--muted); margin-top: 6px }
-    .hint.ok{ color: var(--ok) }
-    .hint.bad{ color: var(--error) }
+    .hint{ font-size:.85rem; color: var(--muted) }
 
-    .btns{
-      display:grid; gap:10px;
-      grid-template-columns: 1fr;
-    }
-    @media (min-width: 560px){
-      .btns{ grid-template-columns: 1fr auto auto auto auto }
-    }
+    .btns{ display:flex; gap:10px; flex-wrap: wrap; margin-top: 6px }
     .btn{
       appearance: none;
       border:1px solid transparent;
       background: var(--primary);
       color:#062e27;
-      font-weight: 800;
-      padding: 13px 16px;
-      border-radius: var(--radius);
-      cursor:pointer; transition:.2s ease;
-      display:inline-flex; align-items:center; justify-content:center; gap:8px;
-      font-size: 1rem;
+      font-weight: 700;
+      padding: 12px 16px;
+      border-radius: 12px;
+      cursor:pointer;
+      transition:.2s ease;
+      flex: 1;
+      min-width: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
+
+    body[data-theme="light"] .btn {
+      color: white;
+    }
+
+    body[data-theme="blue"] .btn {
+      color: white;
+    }
+
     .btn:hover{ filter: brightness(1.07) }
     .btn:active{ transform: translateY(1px) }
     .btn.secondary{
@@ -192,23 +274,26 @@
       border-color: var(--border);
     }
 
+    body[data-theme="light"] .btn.ghost {
+      background: rgba(0,0,0,.03);
+    }
+
     .preview{
-      margin-top: 6px;
+      margin-top: 8px;
       padding: 12px;
       border:1px dashed var(--border);
-      border-radius: var(--radius);
+      border-radius: 12px;
       color: var(--muted);
       overflow:auto;
       white-space: nowrap;
-      font-size: .92rem;
+      background: rgba(255,255,255,.02);
     }
-    .preview a{ color: var(--primary-2); text-decoration: none; word-break: break-all }
 
-    .section{
-      border-top:1px solid var(--border);
-      padding-top: 10px;
-      margin-top: 6px;
+    body[data-theme="light"] .preview {
+      background: rgba(0,0,0,.02);
     }
+
+    .preview a{ color: var(--primary-2); text-decoration: none; word-break: break-all }
 
     .footer{
       padding: 12px 18px 18px;
@@ -219,7 +304,7 @@
       border-top:1px solid var(--border);
     }
 
-    /* Choices.js overrides */
+    /* Choices.js overrides (nice select) */
     .choices__inner{
       background: transparent !important;
       border: none !important;
@@ -227,17 +312,22 @@
       min-height: auto !important;
       color: var(--text);
     }
-    .choices__list--single .choices__item{ padding: 12px 10px; }
+    .choices__list--single .choices__item{ padding: 10px 8px; }
     .choices{ width:100% }
     .choices__list--dropdown,
     .choices__list[aria-expanded]{
-      background: var(--bg-2);
+      background: var(--card);
       border: 1px solid var(--border);
       color: var(--text);
     }
     .choices__list--dropdown .choices__item--selectable.is-highlighted{
       background: rgba(0,168,132,.18);
     }
+
+    body[data-theme="blue"] .choices__list--dropdown .choices__item--selectable.is-highlighted {
+      background: rgba(0,132,255,.18);
+    }
+
     .choices__input{ background: transparent; color: var(--text) }
 
     /* Toast */
@@ -255,152 +345,160 @@
       opacity: 0;
       animation: slideIn .23s ease forwards;
       z-index: 9999;
-      max-width: 85vw;
-      font-size: .95rem;
+      max-width: 80vw;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    [data-theme="light"] .toast{ background: #eefcf6; color:#0f5132; border-color: #bbf7d0 }
-    .toast.error{ background:#1a1212; border-color: rgba(255,77,79,.35); color: #ffe9e9 }
-    [data-theme="light"] .toast.error{ background:#fff1f2; color:#9f1239; border-color:#fecdd3 }
 
+    body[data-theme="blue"] .toast {
+      background: #0b1a2e;
+      border: 1px solid rgba(0,132,255,.25);
+    }
+
+    .toast.error{ background:#1a1212; border-color: rgba(255,77,79,.35); color: #ffe9e9 }
     @keyframes slideIn{
       to{ transform: translateY(0); opacity:1 }
     }
 
-    /* Modal (QR) */
-    .modal{
-      position:fixed; inset:0;
-      display:none; place-items:center;
-      background: rgba(0,0,0,.5);
-      z-index: 9998;
-      padding: 16px;
+    /* Mobile optimizations */
+    @media (max-width: 480px) {
+      .btns {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+      }
+      
+      .footer {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .body {
+        padding: 16px;
+      }
+      
+      .header {
+        padding: 16px 16px 10px;
+      }
     }
-    .modal.open{ display:grid }
-    .modal-card{
-      width: 100%;
-      max-width: 420px;
-      background: var(--card);
-      border:1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      padding: 16px;
+
+    /* Loading animation */
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      border-top-color: var(--primary);
+      animation: spin 1s ease-in-out infinite;
     }
-    .modal-head{
-      display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom: 8px;
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
-    .x{
-      border:none; background: transparent; color: var(--muted); cursor:pointer; font-size: 1.2rem
-    }
-    .qr-wrap{
-      display:grid; place-items:center;
-      padding: 10px; border:1px dashed var(--border); border-radius: 12px; background: rgba(255,255,255,.02);
-      margin: 6px 0 12px;
-    }
-    .qr-actions{ display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap }
   </style>
 </head>
-<body>
+<body data-theme="dark">
   <div class="wrap">
     <div class="card">
       <div class="header">
-        <div class="head-left">
+        <div class="header-left">
           <div class="logo">WA</div>
           <div>
-            <div class="title">WhatsApp Direct Chat</div>
-            <div class="subtitle">Country code alag, number alag — seedha chat</div>
+            <div class="title">WhatsApp Direct Chat (No Save)</div>
+            <div class="subtitle">Start chatting without saving numbers</div>
           </div>
         </div>
-        <div class="head-right">
-          <div class="pill" id="themeToggle" title="Theme: Auto / Light / Dark">
-            <span id="themeIcon">🖥️</span> Theme <b id="themeLabel">Auto</b>
-          </div>
-          <div class="pill" title="Accent color">
-            <span class="chip" data-accent="teal"   style="background:#00a884;border-color:rgba(0,168,132,.45)"></span>
-            <span class="chip" data-accent="indigo" style="background:#6366f1;border-color:#94a3ff"></span>
-            <span class="chip" data-accent="purple" style="background:#a855f7;border-color:#d8b4fe"></span>
-            <span class="chip" data-accent="orange" style="background:#f59e0b;border-color:#fed7aa"></span>
-            <span class="chip" data-accent="rose"   style="background:#f43f5e;border-color:#fecdd3"></span>
-          </div>
+        <div class="theme-switcher">
+          <div class="theme-btn theme-dark active" data-theme="dark" title="Dark Theme"></div>
+          <div class="theme-btn theme-light" data-theme="light" title="Light Theme"></div>
+          <div class="theme-btn theme-blue" data-theme="blue" title="Blue Theme"></div>
         </div>
       </div>
 
       <div class="body">
-        <div class="grid-2">
+        <div class="row grid-2">
           <div>
-            <label for="countryCode">Country Code</label>
+            <label for="countryCode">
+              <i class="fas fa-globe"></i>
+              Country Code
+            </label>
             <div class="field">
               <select id="countryCode" aria-label="Country code">
                 <option value="" disabled selected>Loading country codes...</option>
               </select>
             </div>
-            <div class="hint">Search bhi kar sakte ho (country ya code)</div>
+            <div class="hint">Search by country name or code</div>
           </div>
 
           <div>
-            <label for="phoneNumber">Phone Number</label>
+            <label for="phoneNumber">
+              <i class="fas fa-mobile-alt"></i>
+              Phone Number
+            </label>
             <div class="field">
-              <input id="phoneNumber" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="Number without 0, spaces, or dashes" />
+              <input id="phoneNumber" type="tel" inputmode="numeric" placeholder="Number without 0, spaces, or dashes" />
             </div>
-            <div id="numHint" class="hint">Tip: wa.me me sirf digits hoti hain (no +, spaces, 00)</div>
+            <div class="hint">Example: 98XXXXXXXX (without leading 0)</div>
           </div>
         </div>
 
-        <div>
-          <label for="message">Message (optional)</label>
+        <div class="row">
+          <label for="message">
+            <i class="fas fa-comment"></i>
+            Message (optional)
+          </label>
           <div class="field">
             <textarea id="message" placeholder="Your message goes here..."></textarea>
           </div>
         </div>
 
         <div class="btns">
-          <button id="startBtn" class="btn">🚀 Start Chat</button>
-          <button id="copyBtn" class="btn secondary">📋 Copy</button>
-          <button id="shareBtn" class="btn secondary">🔗 Share</button>
-          <button id="qrBtn" class="btn ghost">🧾 QR</button>
-          <button id="resetBtn" class="btn ghost">↺ Reset</button>
+          <button id="startBtn" class="btn">
+            <i class="fab fa-whatsapp"></i>
+            Start Chat
+          </button>
+          <button id="copyBtn" class="btn secondary">
+            <i class="fas fa-copy"></i>
+            Copy Link
+          </button>
+          <button id="resetBtn" class="btn ghost">
+            <i class="fas fa-redo"></i>
+            Reset
+          </button>
         </div>
 
         <div class="preview">
+          <i class="fas fa-link"></i>
           Link preview: <a id="previewLink" href="#" target="_blank" rel="noopener">—</a>
-        </div>
-
-        <div class="section hint">
-          • Per-country number validation • Mobile-ready • Theme + Accent customizable
         </div>
       </div>
 
       <div class="footer">
         <div>Made with ❤️ for fast WhatsApp chats</div>
-        <div>Tip: Leading 0 mat likho (jaise India: 98XXXXXXXX)</div>
+        <div>Tip: wa.me uses only digits (no +, spaces, 00)</div>
       </div>
     </div>
   </div>
 
-  <!-- Modal (QR Code) -->
-  <div class="modal" id="qrModal" aria-hidden="true">
-    <div class="modal-card">
-      <div class="modal-head">
-        <div style="font-weight:800">QR Code</div>
-        <button class="x" id="qrClose" aria-label="Close">✕</button>
-      </div>
-      <div id="qrArea" class="qr-wrap"></div>
-      <div class="qr-actions">
-        <button id="downloadQR" class="btn secondary">⬇️ Download PNG</button>
-        <button id="closeQR" class="btn ghost">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Libraries (pinned) -->
-  <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/libphonenumber-js@1.11.7/bundle/libphonenumber-js.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-Mn0Xq9DkS2cTDU3s88rBjxMREkWbV9o3X2U2xJxDGH2Hj7n2LJkqfVQY9J1dQvG4e8EwIC6ua0QXx8GPH9Pq3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <!-- Font Awesome for icons -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  
+  <!-- Choices.js -->
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
   <script>
-    // Toast
+    // Utility: Toast
     function toast(msg, type="ok"){
       const t = document.createElement('div');
       t.className = 'toast' + (type === 'error' ? ' error' : '');
-      t.textContent = msg;
+      
+      const icon = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+      t.innerHTML = `<i class="${icon}"></i> ${msg}`;
+      
       document.body.appendChild(t);
       setTimeout(() => {
         t.style.transition = 'opacity .3s, transform .3s';
@@ -415,179 +513,129 @@
     const phoneInput    = document.getElementById('phoneNumber');
     const messageArea   = document.getElementById('message');
     const previewLink   = document.getElementById('previewLink');
-
     const startBtn      = document.getElementById('startBtn');
     const copyBtn       = document.getElementById('copyBtn');
-    const shareBtn      = document.getElementById('shareBtn');
-    const qrBtn         = document.getElementById('qrBtn');
     const resetBtn      = document.getElementById('resetBtn');
-
-    const numHint       = document.getElementById('numHint');
-
-    const qrModal       = document.getElementById('qrModal');
-    const qrClose       = document.getElementById('qrClose');
-    const closeQR       = document.getElementById('closeQR');
-    const downloadQR    = document.getElementById('downloadQR');
-    const qrArea        = document.getElementById('qrArea');
-
-    const themeToggle   = document.getElementById('themeToggle');
-    const themeIcon     = document.getElementById('themeIcon');
-    const themeLabel    = document.getElementById('themeLabel');
+    const themeBtns     = document.querySelectorAll('.theme-btn');
+    const body          = document.body;
 
     let choices; // Choices.js instance
-    let lastValidE164 = null; // e.g., +9198XXXXXXXX
 
-    // Helpers
+    // Theme switching
+    themeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const theme = btn.getAttribute('data-theme');
+        
+        // Update active button
+        themeBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Update theme
+        body.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-theme', theme);
+        
+        // Update choices dropdown if it exists
+        if (choices) {
+          setTimeout(() => {
+            choices.destroy();
+            initChoices();
+          }, 100);
+        }
+        
+        // Save theme preference
+        localStorage.setItem('wa-theme', theme);
+      });
+    });
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem('wa-theme') || 'dark';
+    body.setAttribute('data-theme', savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    
+    // Update active theme button
+    document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`).classList.add('active');
+
+    // Normalize number (digits only)
     const digitsOnly = v => (v || '').replace(/[^\d]/g, '');
 
-    // Theme + Accent
-    const themeState = {
-      mode: localStorage.getItem('theme-mode') || 'auto',
-      media: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)')
-    };
-    function resolveMode(){
-      if(themeState.mode === 'auto'){
-        return themeState.media && themeState.media.matches ? 'dark' : 'light';
-      }
-      return themeState.mode;
-    }
-    function applyTheme(){
-      const mode = resolveMode();
-      document.documentElement.setAttribute('data-theme', mode);
-      themeLabel.textContent = themeState.mode[0].toUpperCase() + themeState.mode.slice(1);
-      themeIcon.textContent = themeState.mode === 'auto' ? '🖥️' : (mode === 'dark' ? '🌙' : '☀️');
-      const meta = document.querySelector('meta[name="theme-color"]');
-      meta && meta.setAttribute('content', mode === 'dark' ? '#0e1116' : '#f6f8fb');
-    }
-    // Listen for OS theme change
-    if(themeState.media){
-      if(themeState.media.addEventListener){
-        themeState.media.addEventListener('change', applyTheme);
-      }else if(themeState.media.addListener){
-        themeState.media.addListener(applyTheme);
-      }
-    }
-    themeToggle.addEventListener('click', () => {
-      themeState.mode = themeState.mode === 'auto' ? 'light' : (themeState.mode === 'light' ? 'dark' : 'auto');
-      localStorage.setItem('theme-mode', themeState.mode);
-      applyTheme();
-    });
-    // Accent presets
-    const ACCENTS = {
-      teal:   { p:'#00a884', p2:'#25d366', ring:'rgba(0,168,132,.35)' },
-      indigo: { p:'#6366f1', p2:'#818cf8', ring:'rgba(99,102,241,.35)' },
-      purple: { p:'#a855f7', p2:'#c084fc', ring:'rgba(168,85,247,.35)' },
-      orange: { p:'#f59e0b', p2:'#fbbf24', ring:'rgba(245,158,11,.35)' },
-      rose:   { p:'#f43f5e', p2:'#fb7185', ring:'rgba(244,63,94,.35)' },
-    };
-    function applyAccent(key){
-      const a = ACCENTS[key] || ACCENTS.teal;
-      document.documentElement.style.setProperty('--primary', a.p);
-      document.documentElement.style.setProperty('--primary-2', a.p2);
-      document.documentElement.style.setProperty('--ring', a.ring);
-      localStorage.setItem('accent-key', key);
-    }
-    document.querySelectorAll('.chip[data-accent]').forEach(el=>{
-      el.addEventListener('click', ()=> applyAccent(el.dataset.accent));
-    });
-
-    // Build WA link (prefers validated E.164)
+    // Build WA link
     function buildLink(){
+      const code = countrySelect.value || '';
+      const num  = digitsOnly(phoneInput.value);
       const msg  = (messageArea.value || '').trim();
-      let numPath = null;
-      if(lastValidE164){
-        numPath = lastValidE164.replace(/^\+/, '');
-      }else{
-        const sel = getSelectedCountry();
-        const raw = digitsOnly(phoneInput.value);
-        if(!sel || !sel.dial || !raw) return '#';
-        numPath = sel.dial.replace('+','') + raw;
-      }
-      return 'https://wa.me/' + numPath + (msg ? ('?text=' + encodeURIComponent(msg)) : '');
+
+      if(!code || !num) return '#';
+      const full = code.replace(/\+/,'') + num;
+      const url  = 'https://wa.me/' + full + (msg ? ('?text=' + encodeURIComponent(msg)) : '');
+      return url;
     }
 
-    // Selected country info
-    function getSelectedCountry(){
-      const opt = countrySelect.options[countrySelect.selectedIndex];
-      if(!opt) return null;
-      const [dial, iso2] = (opt.value || '').split('|');
-      return { dial, iso2, label: opt.textContent || '' };
-    }
-
-    // Validation using libphonenumber
-    function validateNumber(){
-      const sel = getSelectedCountry();
-      const rawDigits = digitsOnly(phoneInput.value);
-      lastValidE164 = null;
-
-      if(!sel || !sel.iso2){
-        numHint.textContent = 'Please select a country code';
-        numHint.className = 'hint';
-        return false;
-      }
-      if(!rawDigits){
-        numHint.textContent = 'Tip: wa.me me sirf digits hoti hain (no +, spaces, 00)';
-        numHint.className = 'hint';
-        return false;
-      }
-      let ok = false;
-      try{
-        if(window.libphonenumber && libphonenumber.parsePhoneNumberFromString){
-          const phone = libphonenumber.parsePhoneNumberFromString(rawDigits, sel.iso2);
-          if(phone && phone.isValid()){
-            ok = true;
-            lastValidE164 = phone.number; // +XXXXXXXXX
-            numHint.textContent = `Valid: ${phone.formatInternational()} (${sel.iso2})`;
-            numHint.className = 'hint ok';
-          }else{
-            numHint.textContent = `Number may be invalid for ${sel.iso2}. Digits: ${rawDigits.length}`;
-            numHint.className = 'hint bad';
-          }
-        }else{
-          ok = rawDigits.length >= 5 && rawDigits.length <= 15;
-          numHint.textContent = ok ? `Looks OK (digits: ${rawDigits.length})` : 'Number length seems invalid (5–15 digits)';
-          numHint.className = 'hint ' + (ok ? 'ok' : 'bad');
-        }
-      }catch(e){
-        numHint.textContent = 'Could not validate this number';
-        numHint.className = 'hint bad';
-      }
-      return ok;
-    }
-
-    // Link preview
+    // Update preview
     function syncPreview(){
       const url = buildLink();
       previewLink.href = url === '#' ? 'javascript:void(0)' : url;
       previewLink.textContent = url === '#' ? '—' : url;
     }
 
-    // Load countries (with fallback)
+    // Validate basic
+    function isValid(){
+      const code = countrySelect.value;
+      const num  = digitsOnly(phoneInput.value);
+      if(!code){ toast('Please select a country code', 'error'); return false; }
+      if(!num){ toast('Please enter a phone number', 'error'); return false; }
+      if(num.length < 5 || num.length > 15){
+        toast('Number length seems invalid (5–15 digits)', 'error');
+        return false;
+      }
+      return true;
+    }
+
+    // Initialize Choices.js
+    function initChoices() {
+      choices = new Choices(countrySelect, {
+        searchEnabled: true,
+        searchChoices: true,
+        itemSelectText: '',
+        shouldSort: false,
+        fuseOptions: { threshold: 0.35 },
+        placeholder: true,
+        placeholderValue: 'Select country code'
+      });
+    }
+
+    // Fetch country codes from RestCountries
     async function loadCountries(){
       try{
+        // Show loading state
+        startBtn.innerHTML = '<div class="loading"></div> Loading...';
+        startBtn.disabled = true;
+        
         const res = await fetch('https://restcountries.com/v3.1/all?fields=name,idd,cca2');
         const data = await res.json();
 
         const options = [];
         data.forEach(c => {
           if(!c.idd || !c.idd.root) return;
-          const root = c.idd.root;
+          const root = c.idd.root; // e.g. "+1"
           const suffixes = Array.isArray(c.idd.suffixes) && c.idd.suffixes.length ? c.idd.suffixes : [''];
-          const iso2 = (c.cca2 || '').toUpperCase();
-          const name = c.name?.common || 'Unknown';
           suffixes.forEach(suf => {
             const dial = (root || '') + (suf || '');
+            const name = c.name?.common || 'Unknown';
+            const code = c.cca2 || '';
+            // Skip anomalies
             if(!/^\+\d+$/.test(dial)) return;
             options.push({
               label: `${name} (${dial})`,
-              value: `${dial}|${iso2}`,
-              iso2, dial, sortKey: name.toLowerCase() + dial
+              value: dial,
+              sortKey: name.toLowerCase() + dial
             });
           });
         });
 
+        // Sort nicely by country name
         options.sort((a,b)=> a.sortKey.localeCompare(b.sortKey));
 
+        // Clear and fill
         countrySelect.innerHTML = '';
         options.forEach(opt=>{
           const o = document.createElement('option');
@@ -596,99 +644,69 @@
           countrySelect.appendChild(o);
         });
 
-        const def = options.find(o => o.dial === '+91' && o.iso2 === 'IN')?.value || options[0]?.value;
-        if(def) countrySelect.value = def;
+        // Default to India (+91) if available, else first item
+        const defaultCode = [...countrySelect.options].find(o => o.value === '+91') ? '+91' : countrySelect.options[0]?.value;
+        if(defaultCode) countrySelect.value = defaultCode;
 
-        choices = new Choices(countrySelect, {
-          searchEnabled: true,
-          searchChoices: true,
-          itemSelectText: '',
-          shouldSort: false,
-          fuseOptions: { threshold: 0.35 },
-          placeholder: true,
-          placeholderValue: 'Select country code'
-        });
+        // Enhance with Choices.js (searchable)
+        initChoices();
 
-        validateNumber();
+        // Restore button state
+        startBtn.innerHTML = '<i class="fab fa-whatsapp"></i> Start Chat';
+        startBtn.disabled = false;
+        
         syncPreview();
       }catch(e){
+        console.error('Failed to load countries:', e);
+        // Fallback minimal list if API fails
         countrySelect.innerHTML = `
-          <option value="+91|IN">India (+91)</option>
-          <option value="+1|US">United States (+1)</option>
-          <option value="+1|CA">Canada (+1)</option>
-          <option value="+44|GB">United Kingdom (+44)</option>
-          <option value="+971|AE">United Arab Emirates (+971)</option>
-          <option value="+92|PK">Pakistan (+92)</option>
-          <option value="+880|BD">Bangladesh (+880)</option>
-          <option value="+977|NP">Nepal (+977)</option>
+          <option value="+91">India (+91)</option>
+          <option value="+1">United States/Canada (+1)</option>
+          <option value="+44">United Kingdom (+44)</option>
+          <option value="+971">United Arab Emirates (+971)</option>
+          <option value="+92">Pakistan (+92)</option>
+          <option value="+880">Bangladesh (+880)</option>
+          <option value="+977">Nepal (+977)</option>
+          <option value="+86">China (+86)</option>
+          <option value="+81">Japan (+81)</option>
+          <option value="+49">Germany (+49)</option>
+          <option value="+33">France (+33)</option>
+          <option value="+7">Russia (+7)</option>
+          <option value="+55">Brazil (+55)</option>
         `;
-        choices = new Choices(countrySelect, { searchEnabled:true, itemSelectText:'' });
-        toast('Country list offline fallback loaded', 'error');
-        validateNumber();
+        initChoices();
+        toast('Using offline country list', 'error');
+        
+        // Restore button state
+        startBtn.innerHTML = '<i class="fab fa-whatsapp"></i> Start Chat';
+        startBtn.disabled = false;
+        
         syncPreview();
       }
     }
 
-    // QR Code
-    let qrInstance = null;
-    function openQR(){
-      const url = buildLink();
-      if(url === '#'){ toast('Select code + enter number', 'error'); return; }
-      qrArea.innerHTML = '';
-      qrModal.classList.add('open');
-      const mode = document.documentElement.getAttribute('data-theme') || 'dark';
-      const dark = mode === 'dark';
-      const colorDark = dark ? '#e6edf3' : '#0e1623';
-      const colorLight = dark ? '#141a22' : '#ffffff';
-      qrInstance = new QRCode(qrArea, {
-        text: url,
-        width: 240, height: 240,
-        colorDark, colorLight,
-        correctLevel: QRCode.CorrectLevel.M
-      });
-    }
-    function closeQRModal(){
-      qrModal.classList.remove('open');
-      qrArea.innerHTML = '';
-      qrInstance = null;
-    }
-    function downloadQRImage(){
-      const img = qrArea.querySelector('img');
-      const canvas = qrArea.querySelector('canvas');
-      const el = img || canvas;
-      if(!el){ toast('QR not ready yet', 'error'); return; }
-      const dataURL = el.tagName.toLowerCase() === 'img' ? el.src : el.toDataURL('image/png');
-      const a = document.createElement('a');
-      a.href = dataURL;
-      a.download = 'whatsapp-qr.png';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    }
-
     // Events
     [countrySelect, phoneInput, messageArea].forEach(el => {
-      el.addEventListener('input', ()=>{ validateNumber(); syncPreview(); });
-      el.addEventListener('change', ()=>{ validateNumber(); syncPreview(); });
+      el.addEventListener('input', syncPreview);
+      el.addEventListener('change', syncPreview);
     });
 
     startBtn.addEventListener('click', e=>{
       e.preventDefault();
-      const sel = getSelectedCountry();
-      const num = digitsOnly(phoneInput.value);
-      if(!sel){ toast('Please select a country code', 'error'); return; }
-      if(!num){ toast('Please enter a phone number', 'error'); return; }
-      window.open(buildLink(), '_blank', 'noopener');
+      if(!isValid()) return;
+      const url = buildLink();
+      window.open(url, '_blank', 'noopener');
     });
 
     copyBtn.addEventListener('click', async e=>{
       e.preventDefault();
+      if(!isValid()) return;
       const url = buildLink();
-      if(url === '#'){ toast('Select code + enter number', 'error'); return; }
       try{
         await navigator.clipboard.writeText(url);
         toast('Link copied to clipboard ✅');
       }catch{
+        // Fallback
         const ta = document.createElement('textarea');
         ta.value = url;
         document.body.appendChild(ta);
@@ -699,46 +717,42 @@
       }
     });
 
-    shareBtn.addEventListener('click', async e=>{
-      e.preventDefault();
-      const url = buildLink();
-      if(url === '#'){ toast('Select code + enter number', 'error'); return; }
-      if(navigator.share){
-        try{ await navigator.share({ title: 'WhatsApp Direct Link', url }); }catch{}
-      }else{
-        await navigator.clipboard.writeText(url).then(()=> toast('Link copied (no native share) ✅'));
-      }
-    });
-
-    qrBtn.addEventListener('click', e=>{ e.preventDefault(); openQR(); });
-    qrClose.addEventListener('click', closeQRModal);
-    closeQR.addEventListener('click', closeQRModal);
-    qrModal.addEventListener('click', (e)=>{ if(e.target === qrModal) closeQRModal(); });
-    downloadQR.addEventListener('click', downloadQRImage);
-
     resetBtn.addEventListener('click', e=>{
       e.preventDefault();
       phoneInput.value = '';
       messageArea.value = '';
-      if(choices){
-        const preferred = Array.from(countrySelect.options).find(o => o.value.startsWith('+91|'));
-        const val = preferred ? preferred.value : (countrySelect.options[0] && countrySelect.options[0].value);
-        if(val) choices.setChoiceByValue(val);
+      if(choices){ 
+        const defaultCode = [...countrySelect.options].find(o => o.value === '+91') ? '+91' : countrySelect.options[0]?.value;
+        choices.setChoiceByValue(defaultCode); 
       }
-      validateNumber();
       syncPreview();
+      phoneInput.focus();
+    });
+
+    // Handle Enter key in phone input
+    phoneInput.addEventListener('keypress', e => {
+      if (e.key === 'Enter') {
+        startBtn.click();
+      }
+    });
+
+    // Auto-focus phone input after country selection
+    countrySelect.addEventListener('change', () => {
+      if (phoneInput.value === '') {
+        setTimeout(() => phoneInput.focus(), 100);
+      }
     });
 
     // Init
-    (function init(){
-      const savedAccent = localStorage.getItem('accent-key') || 'teal';
-      applyAccent(savedAccent);
-      applyTheme();
-      loadCountries().then(()=>{
-        validateNumber();
-        syncPreview();
-      });
-    })();
+    loadCountries();
+    syncPreview();
+    
+    // Focus phone input on page load
+    setTimeout(() => {
+      if (phoneInput.value === '') {
+        phoneInput.focus();
+      }
+    }, 500);
   </script>
 </body>
 </html>
